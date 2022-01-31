@@ -145,3 +145,9 @@ b.	¿Qué gen sobreexpresado es el más significativo?
 # El gen sobreexpresado más significativo sería el Csn1s2b, pues su valor de p es el más elevado de todos (mayor valor de -log10(pvalue))
 ```
 
+6.	(1 punto) Sube el examen a github y escribe a continuación tu url aquí.
+```{r}
+# https://github.com/Richisama/Examen_Bioinformatica.git
+```
+
+7.	Acaba el documento con el comando sessionInfo()
