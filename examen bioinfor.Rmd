@@ -1,0 +1,147 @@
+---
+title: "Examen_Bioinformatica"
+author: "Ricardo Martínez"
+date: "31/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Comandos de Linux. Tengo un fichero llamado genes.txt con 3 columnas: Nombre_ de_ gen, cromosoma y posición. Separados por tabulados. ¿Qué comando utilizarías para saber?:
+a.	¿Cuántas palabras hay en el fichero?
+```{r}
+#wc -w genes.txt
+```
+
+b.	¿Cómo cambiarías todos los tabulados por guiones?
+```{r}
+#cat genes.txt | sed 's/\t/-/g'
+```
+
+c.	¿Cómo cambiarías solo la primera aparición?
+```{r}
+#cat genes.txt | sed 's/\t/-/'
+```
+
+d.	¿Cómo buscarías todos los genes excepto el gen llamado DSTYK?
+```{r}
+#cat genes.txt | grep -i DSTYK
+```
+
+## 2.	Preguntas básicas:
+a.	(0.5 puntos) ¿Cuántas columnas y cuántos registros tiene este dataset?
+```{r}
+library (nycflights13)
+View(weather)
+tiempo<-weather
+ncol(weather)
+nrow (weather)
+```
+
+b.	(0.5 puntos) ¿Cuántos “origin” diferentes existen y para cada uno de ellos cuántos registros hay?
+```{r}
+unique(weather$origin)
+```
+
+c.	(0.5 puntos) En LGA, ¿cuáles fueron la mediana del wind_speed y media de pressure?
+```{r}
+mean(weather$wind_speed[weather$origin=="LGA"], na.rm=T)
+mean(weather$pressure[weather$origin=="LGA"], na.rm=T)
+```
+
+d.	(0.5 puntos) Después de eliminar los NA de la columna wind_gust, calcula para cada mes la media de wind_speed y wind_gust, y el número de casos.
+```{r}
+library(tidyverse)
+media_speed = weather %>%
+  group_by(month)%>%
+  summarise(Media= mean(wind_speed, na.rm=T))
+View (media_speed)
+
+media_gust = weather %>%
+  group_by(month)%>%
+  summarise(Media= mean(wind_gust, na.rm=T))
+
+filter (weather, month==1, wind_speed>=0)
+filter (weather, month==2, wind_speed>=0)
+filter (weather, month==3, wind_speed>=0)
+filter (weather, month==4, wind_speed>=0)
+filter (weather, month==5, wind_speed>=0)
+filter (weather, month==6, wind_speed>=0)
+filter (weather, month==7, wind_speed>=0)
+filter (weather, month==8, wind_speed>=0)
+filter (weather, month==9, wind_speed>=0)
+filter (weather, month==10, wind_speed>=0)
+filter (weather, month==11, wind_speed>=0)
+filter (weather, month==12, wind_speed>=0)
+
+filter (weather, month==1, wind_gust>0)
+filter (weather, month==2, wind_gust>0)
+filter (weather, month==3, wind_gust>0)
+filter (weather, month==4, wind_gust>0)
+filter (weather, month==5, wind_gust>0)
+filter (weather, month==6, wind_gust>0)
+filter (weather, month==7, wind_gust>0)
+filter (weather, month==8, wind_gust>0)
+filter (weather, month==9, wind_gust>0)
+filter (weather, month==10, wind_gust>0)
+filter (weather, month==11, wind_gust>0)
+filter (weather, month==12, wind_gust>0)
+```
+
+## 3. (2 puntos) Intenta hacer este plot:
+
+```{r}
+boxplot(tiempo$temp[tiempo$origin=="EWR"]~tiempo$month[tiempo$origin=="EWR"], xlab="Months", ylab= "ºC", main="EWR", col="red")
+
+boxplot(tiempo$temp[tiempo$origin=="LGA"]~tiempo$month[tiempo$origin=="LGA"], xlab="Months", ylab= "ºC", main="LGA", col="blue")
+
+boxplot(tiempo$temp[tiempo$origin=="JFK"]~tiempo$month[tiempo$origin=="JFK"], xlab="Months", ylab= "ºC", main="JFK", col="green")
+```
+
+
+
+
+## 4.	(2 puntos) El día de tu cumpleaños:
+a.	Qué correlación tuvieron la temperatura y humedad en cada uno de los origin? Plotealo mediante puntos con ggplot.
+```{r}
+cor(weather$temp[weather$month==10 & weather$day==15 & weather$origin=="LGA"], weather$humid[weather$month==10 & weather$day==15 & weather$origin=="LGA"])
+cumpLGA<-filter( weather, month==10, day==15, origin=="LGA")
+ggplot(data = cumpLGA) + 
+  geom_point(mapping = aes (x=humid, y=temp))
+
+cor(weather$temp[weather$month==10 & weather$day==15 & weather$origin=="EWR"], weather$humid[weather$month==10 & weather$day==15 & weather$origin=="EWR"])
+cumpEWR<-filter( weather, month==10, day==15, origin=="EWR")
+ggplot(data = cumpEWR) + 
+  geom_point(mapping = aes (x=humid, y=temp))
+
+cor(weather$temp[weather$month==10 & weather$day==15 & weather$origin=="JFK"], weather$humid[weather$month==10 & weather$day==15 & weather$origin=="JFK"])
+cumpJFK<-filter( weather, month==10, day==15, origin=="JFK")
+ggplot(data = cumpJFK) + 
+  geom_point(mapping = aes (x=humid, y=temp))
+```
+
+b.	Si comparas la temperatura en los origins JFK y LGA ¿son estadísticamente diferentes? ¿Qué p-valor consigues? Plotea los boxplots.
+```{r}
+JFK<-filter(weather, origin=="JFK")
+LGA<-filter(weather, origin=="LGA")
+t.test(JFK$temp, LGA$temp)
+# Se obtiene un valor de p=1.131e-06. Al ser menor de 0,05, podemos afirmar que es estadísticamente significativo la temperatura en los orígenes JFK y LGA.
+
+boxplot (JFK$temp, LGA$temp, ylab= "ºF", main="Diferencia de temperatura", col="68", xlab="JFK                                   LGA")
+
+```
+
+## 5.	(1 punto) Observa la siguiente imagen.
+
+a.	¿Cuál es el punto con FC (Fold change) más grande en valores absolutos?
+```{r}
+# El valor con mayor fold change en valores absolutos sería en este caso el gen que se encuentra en en las coordenadas -8 en el eje de logfc y 5 en el eje -log10(pvalue)
+```
+
+b.	¿Qué gen sobreexpresado es el más significativo?
+```{r}
+# El gen sobreexpresado más significativo sería el Csn1s2b, pues su valor de p es el más elevado de todos (mayor valor de -log10(pvalue))
+```
+
